@@ -1,4 +1,6 @@
 #EXTM3U
+#EXTINF:-1 group-title="Peliculas de ciencia ficion"
+
 #EXTINF:-1 tvg-logo="https://i.ibb.co/LRLk2rT/KONG.png",Kong: la Isla Calavera
 https://www.googleapis.com/drive/v3/files/1nnOgpgfJpsz1xAQG6hY8wfV44pCEYTe7?alt=media&key=AIzaSyC_SfUy_PVVO8qEPumM0E0D0UWvrYybyCU
 #EXTINF:-1 tvg-logo="https://archive.org/download/ava-2/AVA1.png",Avatar (2009)
