@@ -1,4 +1,7 @@
 #EXTM3U
-#EXTINF:-1 tvg-logo="",Menu
+#EXTINF:-1 group-title="Menu "
+
+#EXTINF:-1 group-title="Accion"
+#EXTINF:-1 tvg-logo="",Accion
 https://raw.githubusercontent.com/DanielRv555/Divertulua/main/Accion
 
