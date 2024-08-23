@@ -4,7 +4,8 @@
 #EXTINF:-1 tvg-logo="https://i.ibb.co/kSNQPpm/ext2.jpg" group-title="Acción",Misión Rescate 2 (2023)
 #EXTVLCOPT:comment=De vuelta del borde de la muerte, el comando Tyler Rake se embarca en una peligrosa misión para salvar a la familia encarcelada de un gángster despiadado.
 https://dl.dropbox.com/s/ohbgz776mnv8f7u/extrac2.mp4
-#EXTINF:-1 tvg-logo="https://i.ibb.co/4ZvQC2y/Pstr-1-1.jpg",Rapidos y Furiosos X (2023)
+#EXTINF:-1 tvg-logo="https://i.ibb.co/4ZvQC2y/Pstr-1-1.jpg" group-title="Acción",Rapidos y Furiosos X (2023)
+#EXTVLCOPT:comment= Dom Toretto y sus familias se enfrentan al peor enemigo imaginable, uno llegado desde el pasado con sed de venganza, dispuesto a cualquier cosa con tal de destruir todo aquello que Dom ama.
 https://dl.dropbox.com/s/0dushmny5bad43p/f45stX.mp4
 
 #EXTINF:-1 tvg-logo="https://i.ibb.co/3yz5PM2/shan2.jpg",El chico de Shanghai 2 (2003)
