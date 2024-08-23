@@ -1,7 +1,8 @@
 #EXTM3U
 #EXTINF:-1 group-title="Peliculas movhub "
 
-#EXTINF:-1 tvg-logo="https://i.ibb.co/kSNQPpm/ext2.jpg",Misión Rescate 2 (2023)
+#EXTINF:-1 tvg-logo="https://i.ibb.co/kSNQPpm/ext2.jpg" group-title="Acción",Misión Rescate 2 (2023)
+#EXTVLCOPT:comment=De vuelta del borde de la muerte, el comando Tyler Rake se embarca en una peligrosa misión para salvar a la familia encarcelada de un gángster despiadado.
 https://dl.dropbox.com/s/ohbgz776mnv8f7u/extrac2.mp4
 #EXTINF:-1 tvg-logo="https://i.ibb.co/4ZvQC2y/Pstr-1-1.jpg",Rapidos y Furiosos X (2023)
 https://dl.dropbox.com/s/0dushmny5bad43p/f45stX.mp4
@@ -14,8 +15,7 @@ https://ia601608.us.archive.org/8/items/c-4rs-hd-720p-699968/Shangha41_Kid___del
 https://ia801608.us.archive.org/8/items/c-4rs-hd-720p-699968/M_ximo_rival_DVDRip__1094396.mp4
 #EXTINF:-1 tvg-logo="https://i.ibb.co/gd4vc0Z/police.jpg",Nueva historia policial (2004)
 https://ia601608.us.archive.org/8/items/c-4rs-hd-720p-699968/New_Policia_Story_DVDRip__1420285.mp4
-#EXTINF:-1 tvg-logo="https://archive.org/download/bhhbn/bhhbn.jpg",john.-wick 4.2023.-ts.-720p.-latino.-line
-https://archive.org/download/john.-wick.-4.2023.-ts.-720p.-latino.-line.-mega-1080p/John.Wick.4.2023.Ts.720p.Latino.LINE.Mega1080p .mp4
+
 #EXTINF:-1 tvg-logo="https://i.ibb.co/JsLKSjg/sinescala.jpg",Sin escalas: Sin escalas (2014)
 https://ia902601.us.archive.org/25/items/sineskal-4s-hd-720p-530566/Sine%27skal4s_HD__720p___530566.mp4
 
@@ -27,8 +27,7 @@ https://ia902606.us.archive.org/28/items/2-ladron-3s-y-12-hd-720p-1142278/2_ladr
 https://ia902600.us.archive.org/18/items/karat-3-k-1d-4-hd-720p-1190716/Karat3K1d_4HD__720p___1190716.mp4
 #EXTINF:-1 tvg-logo="https://i.ibb.co/KxRz7G6/colombiana.jpg",Colombiana: Venganza despiadada (2011)
 https://ia601601.us.archive.org/28/items/colomb-despiad-dvdrip-1067181/ColombDespiad__DVDRip__1067181.mp4
-#EXTINF:-1 tvg-logo="https://i.ibb.co/bJzhXFT/snlimites.jpg",Sin límites (2011)
-https://ia601603.us.archive.org/15/items/s-1n-lm-1t-3s-dvdrip-533389/S1n_l_m1t3s_DVDRip__533389.mp4
+
 #EXTINF:-1 tvg-logo="https://m.media-amazon.com/images/M/MV5BYzg2NWNhOWItYjA3Yi00MzhhLTg4ZmItYzM3ZTIwN2U0ZGQ5XkEyXkFqcGdeQXVyMzEyMDQzNzY@._V1_FMjpg_UX1000_.jpg",noche sin paz
 https://archive.org/download/fi_20230106/Noche%20Sin%20Paz.mp4
 #EXTINF:-1 tvg-logo="https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcQ8lECLNHMOR3JB9Yon_GogmYXBHukXADUMOaiToqHbSrd0gkzr",la mujer rey
