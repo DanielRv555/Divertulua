@@ -1,5 +1,5 @@
 #EXTM3U
-#EXTINF:-1 group-title="Peliculas movhub "
+
 
 #EXTINF:-1 tvg-logo="https://i.ibb.co/kSNQPpm/ext2.jpg" group-title="Acción",Misión Rescate 2 (2023)
 #EXTVLCOPT:comment=De vuelta del borde de la muerte, el comando Tyler Rake se embarca en una peligrosa misión para salvar a la familia encarcelada de un gángster despiadado.
@@ -8,7 +8,8 @@ https://dl.dropbox.com/s/ohbgz776mnv8f7u/extrac2.mp4
 #EXTVLCOPT:comment= Dom Toretto y sus familias se enfrentan al peor enemigo imaginable, uno llegado desde el pasado con sed de venganza, dispuesto a cualquier cosa con tal de destruir todo aquello que Dom ama.
 https://dl.dropbox.com/s/0dushmny5bad43p/f45stX.mp4
 
-#EXTINF:-1 tvg-logo="https://i.ibb.co/3yz5PM2/shan2.jpg",El chico de Shanghai 2 (2003)
+#EXTINF:-1 tvg-logo="https://i.ibb.co/3yz5PM2/shan2.jpg" group-title="Acción",El chico de Shanghai 2 (2003)
+#EXTVLCOPT:comment= Secuela de las aventuras vividas en el salvaje oeste por la peculiar pareja formada por Chon Wang (Jackie Chan) y Roy O'Bannon (Owen Wilson). Corre el año 1887 cuando un chino rebelde asesina al padre de Chong y escapa a Inglaterra, Chon y Roy se encaminan a Londres en busca de venganza. Mientras, la hermana de Chon, que también quiere vengarse, tropieza con lo que parece ser una conspiración contra la familia real.
 https://ia601608.us.archive.org/8/items/c-4rs-hd-720p-699968/Shangh41_Kid_en_Londres_DVDRip__1139272.mp4
 #EXTINF:-1 tvg-logo="https://i.ibb.co/1KPQ3gQ/shan1.jpg",El niño de Shanghai (2000)
 https://ia601608.us.archive.org/8/items/c-4rs-hd-720p-699968/Shangha41_Kid___del_este_al_oeste_HD__720p___1123111.mp4
