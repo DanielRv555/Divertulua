@@ -1,10 +1,6 @@
-[
-    {
-        "username": "Daniel",
-        "password": "Dan"
-    },
-    {
-        "username": "user2",
-        "password": "mypass456"
-    }
-]
+#EXTM3U
+#EXTINF:-1,usuario1
+http://password1
+#EXTINF:-1,usuario2
+http://password2
+
