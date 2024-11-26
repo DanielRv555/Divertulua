@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detección de Sentadillas con MoveNet</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/pose-detection@0.0.6/dist/pose-detection.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #videoContainer, #angleChart {
+            margin-bottom: 20px;
+        }
+        #status, #squatStatus {
+            margin-bottom: 10px;
+        }
+        #squatStatus {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        #buttonContainer {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Detección de Sentadillas con MoveNet</h1>
+
+    <div id="videoContainer">
+        <video id="video" width="640" height="480" autoplay></video>
+        <canvas id="canvas" width="640" height="480"></canvas>
+    </div>
+
+    <div id="status">Estado: Esperando detección</div>
+    <div id="squatStatus">Posición: De pie</div>
+
+    <canvas id="angleChart" width="640" height="240"></canvas>
+
+    <div id="buttonContainer">
+        <button id="resetButton">Reiniciar Gráfica</button>
+        <button id="recordButton">Grabar</button>
+    </div>
+
+    <script>
+        let detector;
+        let poses;
+        let video;
+        let canvas;
+        let ctx;
+        let angleChart;
+        let startTime;
+        let lastUpdateTime = 0;
+        let isChartRunning = true;
+        let maxVisiblePoints = 50; // Número máximo de puntos visibles en la gráfica
+
+        let mediaRecorder;
+        let recordedChunks = [];
+        let isRecording = false;
+
+        const state = {
+            algorithm: 'single-pose',
+            estimate: 'single-person',
+        };
+
+        // Inicializar el detector y el video
+        async function init() {
+            const detectorConfig = {modelType: poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING};
+            detector = await poseDetection.createDetector(poseDetection.SupportedModels.MoveNet, detectorConfig);
+
+            video = document.getElementById('video');
+            canvas = document.getElementById('canvas');
+            ctx = canvas.getContext('2d');
+
+            const stream = await navigator.mediaDevices.getUserMedia({video: true});
+            video.srcObject = stream;
+
+            await new Promise((resolve) => {
+                video.onloadedmetadata = () => {
+                    resolve(video);
+                };
+            });
+
+            video.play();
+
+            startTime = Date.now();
+            renderPrediction();
+        }
+
+        // Renderizar predicciones
+        async function renderPrediction() {
+            await checkPoses();
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            if (poses && poses.length > 0) {
+                const keypoints = poses[0].keypoints;
+                drawKeypoints(keypoints);
+                drawSkeleton(keypoints);
+                const angles = calculateAngles(keypoints);
+                drawAngles(angles, keypoints);
+                updateSquatStatus(angles.knee);
+
+                if (isChartRunning) {
+                    const currentTime = (Date.now() - startTime) / 1000;
+                    if (currentTime - lastUpdateTime >= 0.5) {
+                        updateChart(angles.knee, currentTime);
+                        lastUpdateTime = currentTime;
+                    }
+                }
+            }
+
+            requestAnimationFrame(renderPrediction);
+        }
+
+        // Verificar poses
+        async function checkPoses() {
+            if (detector != null) {
+                try {
+                    poses = await detector.estimatePoses(video, {flipHorizontal: false});
+                    if (poses && poses.length > 0) {
+                        document.getElementById('status').innerText = 'Estado: Pose detectada';
+                    } else {
+                        document.getElementById('status').innerText = 'Estado: No se detectó ninguna pose';
+                    }
+                } catch (error) {
+                    document.getElementById('status').innerText = `Error: ${error.message}`;
+                }
+            }
+        }
+
+        // Dibujar keypoints
+        function drawKeypoints(keypoints) {
+            ctx.fillStyle = 'red';
+            for (let i = 0; i < keypoints.length; i++) {
+                const keypoint = keypoints[i];
+                if (keypoint.score > 0.3) {
+                    ctx.beginPath();
+                    ctx.arc(keypoint.x, keypoint.y, 5, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
+            }
+        }
+
+        // Dibujar esqueleto
+        function drawSkeleton(keypoints) {
+            const connections = [
+                ['left_hip', 'left_knee'],
+                ['left_knee', 'left_ankle'],
+                ['right_hip', 'right_knee'],
+                ['right_knee', 'right_ankle'],
+                ['left_shoulder', 'right_shoulder'],
+                ['left_shoulder', 'left_hip'],
+                ['right_shoulder', 'right_hip'],
+            ];
+
+            ctx.strokeStyle = 'blue';
+            ctx.lineWidth = 2;
+
+            for (let i = 0; i < connections.length; i++) {
+                const start = keypoints.find(kp => kp.name === connections[i][0]);
+                const end = keypoints.find(kp => kp.name === connections[i][1]);
+
+                if (start && end && start.score > 0.3 && end.score > 0.3) {
+                    ctx.beginPath();
+                    ctx.moveTo(start.x, start.y);
+                    ctx.lineTo(end.x, end.y);
+                    ctx.stroke();
+                }
+            }
+        }
+
+        // Calcular ángulos
+        function calculateAngles(keypoints) {
+            const hip = keypoints.find(kp => kp.name === 'left_hip');
+            const knee = keypoints.find(kp => kp.name === 'left_knee');
+            const ankle = keypoints.find(kp => kp.name === 'left_ankle');
+
+            if (hip && knee && ankle && hip.score > 0.3 && knee.score > 0.3 && ankle.score > 0.3) {
+                const hipAngle = calculateAngle(knee, hip, { x: hip.x, y: hip.y - 10 });
+                const kneeAngle = calculateAngle(hip, knee, ankle);
+                const ankleAngle = calculateAngle(knee, ankle, { x: ankle.x + 10, y: ankle.y });
+
+                return {
+                    hip: Math.round(hipAngle),
+                    knee: Math.round(kneeAngle),
+                    ankle: Math.round(ankleAngle)
+                };
+            }
+            return { hip: null, knee: null, ankle: null };
+        }
+
+        function calculateAngle(a, b, c) {
+            const radians = Math.atan2(c.y - b.y, c.x - b.x) - Math.atan2(a.y - b.y, a.x - b.x);
+            let angle = Math.abs(radians * 180.0 / Math.PI);
+            
+            if (angle > 180.0) {
+                angle = 360 - angle;
+            }
+            
+            return angle;
+        }
+
+        // Dibujar ángulos en el video
+        function drawAngles(angles, keypoints) {
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = 1;
+            ctx.font = '16px Arial';
+
+            const hip = keypoints.find(kp => kp.name === 'left_hip');
+            const knee = keypoints.find(kp => kp.name === 'left_knee');
+            const ankle = keypoints.find(kp => kp.name === 'left_ankle');
+
+            if (hip && knee && ankle && angles.hip !== null && angles.knee !== null && angles.ankle !== null) {
+                drawAngleText(angles.hip + '°', hip.x, hip.y);
+                drawAngleText(angles.knee + '°', knee.x, knee.y);
+                drawAngleText(angles.ankle + '°', ankle.x, ankle.y);
+            }
+        }
+
+        function drawAngleText(text, x, y) {
+            ctx.fillText(text, x, y);
+            ctx.strokeText(text, x, y);
+        }
+
+        // Actualizar estado de la sentadilla
+        function updateSquatStatus(kneeAngle) {
+            const squatStatus = document.getElementById('squatStatus');
+            if (kneeAngle > 160) {
+                squatStatus.innerText = 'Posición: De pie';
+                squatStatus.style.color = 'green';
+            } else if (kneeAngle <= 90) {
+                squatStatus.innerText = 'Posición: Sentadilla';
+                squatStatus.style.color = 'red';
+            } else {
+                squatStatus.innerText = 'Posición: Sentadilla Parcial';
+                squatStatus.style.color = 'orange';
+            }
+        }
+
+        // Configurar gráfica
+        function setupChart() {
+            const ctx = document.getElementById('angleChart').getContext('2d');
+            angleChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Ángulo de la Rodilla',
+                        data: [],
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        fill: false,
+                        tension: 0.4 // Hace la gráfica más ondulada
+                    }]
+                },
+                options: {
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            position: 'bottom',
+                            min: 0,
+                            max: maxVisiblePoints // Límite máximo visible en el eje x
+                        },
+                        y: {
+                            beginAtZero: true,
+                            max: 180
+                        }
+                    }
+                }
+            });
+        }
+
+        // Actualizar la gráfica
+        function updateChart(angle, time) {
+            if (angle !== null) {
+                const labels = angleChart.data.labels;
+                const data = angleChart.data.datasets[0].data;
+
+                if (labels.length > 0 && time > maxVisiblePoints) {
+                    labels.shift();
+                    data.shift();
+                }
+
+                labels.push(time);
+                data.push(angle);
+
+                angleChart.options.scales.x.min = Math.max(0, time - maxVisiblePoints);
+                angleChart.options.scales.x.max = time;
+
+                angleChart.update();
+            }
+        }
+
+        // Reiniciar la gráfica
+        function resetChart() {
+            angleChart.data.labels = [];
+            angleChart.data.datasets[0].data = [];
+            angleChart.update();
+            startTime = Date.now(); // Reiniciar el tiempo
+            lastUpdateTime = 0; // Reiniciar el último tiempo de actualización
+            isChartRunning = true; // Reanudar la gráfica
+        }
+
+        // Manejar el botón de reinicio
+        document.getElementById('resetButton').addEventListener('click', resetChart);
+
+        // Configurar grabación
+        function startRecording() {
+            const stream = canvas.captureStream(30); // Captura el canvas a 30 FPS
+            mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+
+            mediaRecorder.ondataavailable = function(event) {
+                if (event.data.size > 0) {
+                    recordedChunks.push(event.data);
+                }
+            };
+
+            mediaRecorder.onstop = function() {
+                const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'recording.webm';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            };
+
+            mediaRecorder.start();
+            isRecording = true;
+            document.getElementById('recordButton').innerText = 'Detener Grabación';
+        }
+
+        function stopRecording() {
+            mediaRecorder.stop();
+            isRecording = false;
+            document.getElementById('recordButton').innerText = 'Grabar';
+            recordedChunks = [];
+        }
+
+        // Manejar el botón de grabación
+        document.getElementById('recordButton').addEventListener('click', () => {
+            if (isRecording) {
+                stopRecording();
+            } else {
+                startRecording();
+            }
+        });
+
+        // Inicializar
+        setupChart();
+        init();
+    </script>
+</body>
+</html>
